@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="185.102.139.125 BeriHoster2">
+    <serverData>
+      <paths name="185.102.139.125 BeriHoster2">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/admin/web/pro-logan.ru/public_html" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="Cloudmouse">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/pro-logan.ru/public_html" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="FirstVDS">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/staser007/data/www/pro-logan.ru" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
