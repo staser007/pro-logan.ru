@@ -190,20 +190,66 @@ function slp_spu_page_link_filter($url, $post){
 
 add_filter( 'request', 'slp_spu_request_filter');
 function slp_spu_request_filter($query_vars){
+    /** @var $wpdb wpdb */
 
-    $page = get_posts(array('category_name' => $query_vars['name']));
+    global $wpdb;
+    // Возьмем пример третьей вложенности придет сюда
+    //    $query_vars = array(2) {
+    //      ["page"]     => string(0) ""
+    //      ["pagename"] => string(36) "structure_car/engine/design_features"
+    //  }
 
-    var_dump($page);
-//    $query_vars['pagename'] = "structure_car/engine/design_features";
-//    unset($query_vars['name']);
-//    var_dump($query_vars);
+    // Значит если это отдавать всегда, то мы увидим всегда эту страницу
+    // значит нам надо найти страницу по имени из pagename и вернуть полный ее путь ("structure_car/engine/design_features")
 
-    return $query_vars;
-    //var_dump($query_vars); die;
+
+//    return $query_vars;
+
+//    return array(
+//        "page" => "",
+//        "pagename" => "structure_car/engine/design_features"
+//    );
+
+    // Получаем имя страницы
+
+    $pagename = explode('/', $query_vars['name']);
+    $pagename = array_pop($pagename);
+
+    if(!$pagename || ($page = $wpdb->get_row("SELECT * FROM `$wpdb->posts` WHERE `post_name` = '$pagename'")) == false)
+        return $query_vars;
+
+    // Подменяем данные $query_vars данными найденной статьи
+    $full_page_name = $page->post_name;
+    while($page->post_parent > 0) {
+        $page = $wpdb->get_row("SELECT * FROM `$wpdb->posts` WHERE `ID` = '".$page->post_parent."'");
+        $full_page_name = $page->post_name . '/' . $full_page_name;
+    }
+
+    return array(
+        'name' => '',
+        'pagename' => $full_page_name
+    );
 
 }
 
+add_filter( 'widget_pages_args', 'slp_spu_widget_pages_args');
+function slp_spu_widget_pages_args($query_vars){
+    /** @var $wpdb wpdb */
 
+    global $wpdb;
+
+//    array {
+//        ["title_li"]=> string(0) ""
+//        ["echo"]=> int(0)
+//        ["sort_column"]=> string(22) "menu_order, post_title"
+//        ["exclude"]=> string(0) ""
+//    }
+
+    $query_vars['child_of'] = 91;
+
+    return $query_vars;
+
+}
 
 
 ?>
