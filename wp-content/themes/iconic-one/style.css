@@ -1729,3 +1729,29 @@ img#wpstats {
 		margin-left: 50px;
 	}
 }
+
+.entry-content p {
+    text-align: justify;
+}
+
+.entry-content table.simple_table th{
+	text-align: center;
+    vertical-align: middle;
+}
+.entry-content table.simple_table td.part{
+    text-align: center;
+    font-style: italic;
+    font-weight: bold;
+}
+.entry-content table.simple_table td.check{
+    width: 30px;
+    background: rgba(0, 0, 0, 0) url("/images/rotate.png") no-repeat scroll center center;
+}
+.entry-content table.simple_table td.replace{
+    width: 30px;
+    background: rgba(0, 0, 0, 0) url("/images/refresh-red.png") no-repeat scroll center center;
+}
+.entry-content table.simple_table td.not_make{
+    width: 30px;
+    text-align: center;
+}

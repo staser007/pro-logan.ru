@@ -186,18 +186,37 @@ function slp_spu_page_link_filter($url, $post){
     return get_option('home') . '/' . $post->post_name . $extension;
 }
 
+/*
+ * Фильтр для правки функции get_term_link
+ * */
+add_filter( 'term_link', 'slp_spu_term_link_filter', null, 2);
+function slp_spu_term_link_filter($url, $post){
+
+    $options   = get_option('slp_spu_options');
+    $extension = (isset($options['extension'])) ? $options['extension'] : '';
+
+    return get_option('home') . '/' . $post->slug . $extension;
+}
+
+
 
 
 add_filter( 'request', 'slp_spu_request_filter');
 function slp_spu_request_filter($query_vars){
     /** @var $wpdb wpdb */
-
     global $wpdb;
+
     // Возьмем пример третьей вложенности придет сюда
-    //    $query_vars = array(2) {
+    //  $query_vars = array(2) {
     //      ["page"]     => string(0) ""
     //      ["pagename"] => string(36) "structure_car/engine/design_features"
     //  }
+    //
+    //  Для рубрик
+    //  $query_vars = array(2) {
+    //      ["category_name"]     => string(0) "blog"
+    //  }
+    //
 
     // Значит если это отдавать всегда, то мы увидим всегда эту страницу
     // значит нам надо найти страницу по имени из pagename и вернуть полный ее путь ("structure_car/engine/design_features")
@@ -215,20 +234,27 @@ function slp_spu_request_filter($query_vars){
     $pagename = explode('/', $query_vars['name']);
     $pagename = array_pop($pagename);
 
-    if(!$pagename || ($page = $wpdb->get_row("SELECT * FROM `$wpdb->posts` WHERE `post_name` = '$pagename'")) == false)
-        return $query_vars;
+    if (!$pagename) return $query_vars;
 
-    // Подменяем данные $query_vars данными найденной статьи
-    $full_page_name = $page->post_name;
-    while($page->post_parent > 0) {
-        $page = $wpdb->get_row("SELECT * FROM `$wpdb->posts` WHERE `ID` = '".$page->post_parent."'");
-        $full_page_name = $page->post_name . '/' . $full_page_name;
+    if($page = $wpdb->get_row("SELECT * FROM `$wpdb->posts` WHERE `post_name` = '$pagename' AND `post_type` = 'page'")){
+        // Подменяем данные $query_vars данными найденной статьи
+        $full_page_name = $page->post_name;
+        while ($page->post_parent > 0) {
+            $page = $wpdb->get_row("SELECT * FROM `$wpdb->posts` WHERE `ID` = '" . $page->post_parent . "'");
+            $full_page_name = $page->post_name . '/' . $full_page_name;
+        }
+        return array('name' => '', 'pagename' => $full_page_name);
+    }elseif($page = $wpdb->get_row("SELECT * FROM `$wpdb->terms` WHERE `slug` = '$pagename'")){
+        return array('category_name' => $pagename);
     }
 
-    return array(
-        'name' => '',
-        'pagename' => $full_page_name
-    );
+
+    return $query_vars;
+
+
+
+
+
 
 }
 
